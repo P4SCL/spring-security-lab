@@ -19,9 +19,9 @@ public class StudentController {
 					new Student(1,"Alex"),
 					new Student(2,"Juanito"));
 
-	//Seguir las nomenclaturas
+	
 	@GetMapping(path = "{studentId}")
-	public Student obtenerPorId(@PathVariable("studentId") Integer studentId) {
+	public Student getStudentById(@PathVariable("studentId") Integer studentId) {
 		return STUDENTS.stream().filter
 				(e->studentId.equals(e.getId()))
 				.findFirst()
