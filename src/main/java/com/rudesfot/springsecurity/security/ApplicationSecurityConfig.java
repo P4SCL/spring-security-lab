@@ -7,6 +7,7 @@ import static com.rudesfot.springsecurity.security.Enum_Role.STUDENT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -41,7 +43,22 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 			.anyRequest()
 			.authenticated()
 			.and()
-			.httpBasic();
+			.formLogin()
+			.loginPage("/login").permitAll()
+			.defaultSuccessUrl("/courses", true)
+			.and()
+				.rememberMe().tokenValiditySeconds(60)
+				.key("clave_para_md5")
+			.and()
+				.logout()
+					.logoutUrl("/logout")
+					//.logoutRequestMatcher(new AntPathRequestMatcher("/logout", HttpMethod.POST.name()))
+					.logoutSuccessUrl("/login")					
+					.clearAuthentication(true)
+					.invalidateHttpSession(true)
+					.deleteCookies("JSESSIONID","remember-me");
+					
+					
 	}
 
 	@Override
@@ -58,7 +75,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 		UserDetails nefi = User.builder()
 				 .username("nefi")
 				 .password(passwordEncoder.encode("12345"))
-				 .roles(ADMIN.name())
+				 //.roles(ADMIN.name())
 				 .authorities(STUDENT.getGrantedAuthorities())
 				 .build();	
 		
